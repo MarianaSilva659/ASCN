@@ -1,0 +1,43 @@
+# Kubernetes Namespace
+namespace: default
+
+# Moonshot Resource Names
+moonshot_service_name: moonshot-service
+moonshot_deployment_name: moonshot-deployment
+moonshot_app_label: app.kubernetes.io/name=moonshot
+
+# Horizontal Pod Autoscaler Configuration
+enable_hpa: true                   # Enable Horizontal Pod Autoscaler
+hpa_min_replicas: 1                # HPA minimum replicas
+hpa_max_replicas: 3                # HPA maximum replicas (adjusted to cluster's maximum capacity)
+hpa_target_cpu_utilization: 60     # Target CPU utilization percentage (lower to optimize scaling behavior)
+hpa_target_memory_utilization: 70  # Target memory utilization percentage (adjusted for cluster constraints)
+
+# Resource Requests and Limits
+resource_request_cpu: "1"          # Minimum CPU for the container
+resource_request_memory: "2Gi"     # Minimum memory for the container
+resource_limit_cpu: "2"            # Maximum CPU for the container
+resource_limit_memory: "4Gi"       # Maximum memory for the container 
+
+# Liveness Probe Configuration
+liveness_probe_initial_delay: 60   # Delay before liveness probe starts
+liveness_probe_period: 20          # Period between liveness probe checks
+
+# Readiness Probe Configuration
+readiness_probe_initial_delay: 60  # Delay before readiness probe starts
+readiness_probe_period: 20         # Period between readiness probe checks
+
+# Moonshot Custom Dashboard Name
+moonshot_dashboard_name: "Moonshot Monitoring Overview"
+
+# Inventory File
+moonshot_inventory_file: inventory/gcp.yml
+
+# Database Migration
+migrate_db: "true"
+
+# Moonshot Application Port
+moonshot_app_port: 8000
+
+# Moonshot Image
+moonshot_image: jeduardoliv/moonshot_gtp21:latest

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ moonshot_deployment_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: moonshot
+    app.kubernetes.io/instance: {{ moonshot_deployment_name }}
+    app.kubernetes.io/component: application
+    app.kubernetes.io/managed-by: ansible
+spec:
+  replicas: {{ hpa_min_replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: moonshot
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: moonshot
+        app.kubernetes.io/instance: {{ moonshot_deployment_name }}
+    spec:
+      containers:
+        - name: moonshot
+          image: "{{ moonshot_image }}"
+          envFrom:
+            - configMapRef:
+                name: moonshot-config
+          ports:
+            - containerPort: {{ moonshot_app_port }}
+          resources:
+            requests:
+              cpu: "{{ resource_request_cpu }}"
+              memory: "{{ resource_request_memory }}"
+            limits:
+              cpu: "{{ resource_limit_cpu }}"
+              memory: "{{ resource_limit_memory }}"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: {{ moonshot_app_port }}
+            initialDelaySeconds: {{ liveness_probe_initial_delay }}
+            periodSeconds: {{ liveness_probe_period }}
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: {{ moonshot_app_port }}
+            initialDelaySeconds: {{ readiness_probe_initial_delay }}
+            periodSeconds: {{ readiness_probe_period }}

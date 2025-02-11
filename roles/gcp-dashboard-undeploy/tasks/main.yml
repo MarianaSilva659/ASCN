@@ -1,0 +1,24 @@
+---
+- name: Get dashboard IDs
+  command: >
+    gcloud monitoring dashboards list --project={{ gcp_project }}
+    --filter="displayName='{{ dashboard_display_name }}'"
+    --format="value(name)"
+  register: dashboard_ids
+
+- name: Validate dashboards to be deleted
+  debug:
+    msg: "Dashboards matching filter: {{ dashboard_ids.stdout_lines }}"
+
+- name: Confirm deletion of dashboards
+  pause:
+    prompt: "Do you want to delete the following dashboards? {{ dashboard_ids.stdout_lines }}"
+  when: dashboard_ids.stdout_lines | length > 0
+
+- name: Remove Moonshot Custom Google Cloud Dashboards
+  command: >
+    gcloud monitoring dashboards delete {{ item }}
+    --project={{ gcp_project }}
+    --quiet
+  loop: "{{ dashboard_ids.stdout_lines }}"
+  when: dashboard_ids.stdout_lines | length > 0

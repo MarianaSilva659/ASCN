@@ -1,0 +1,9 @@
+---
+- name: "Deploy PostgreSQL and Moonshot"
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: k8s-postgres-deploy
+      tags: ["k8s-postgres-deploy"]
+    - role: k8s-moonshot-deploy
+      tags: ["k8s-moonshot-deploy"]

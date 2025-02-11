@@ -1,0 +1,11 @@
+Metric,Value,Unit
+Throughput,26.055318513683815,Requests/Second
+Average Response Time,5590.305129913391,ms
+Error Rate,1.5989340439706863,%
+Average Latency,3748.6167888074615,ms
+Total Data Received,3442526.0,Bytes
+Total Data Sent,3555968.0,Bytes
+Response Code 200,2504.0,Count
+Response Code 201,2492.0,Count
+Response Code 302,2389.0,Count
+Response Code Non HTTP response code: java.net.SocketException,120.0,Count

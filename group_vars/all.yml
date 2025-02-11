@@ -1,0 +1,6 @@
+# Database configurations
+db_host: postgres-service
+db_port: 5432
+db_name: moonshot
+db_username: moonshot_user
+db_password: moonshot_password

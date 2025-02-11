@@ -1,0 +1,11 @@
+---
+- name: Render the dashboard JSON to a temporary file
+  template:
+    src: "templates/moonshot_dashboard.json"
+    dest: "/tmp/moonshot_dashboard.json"
+
+- name: Deploy Moonshot Custom Google Cloud Dashboard
+  command: >
+    gcloud monitoring dashboards create
+    --project="{{ gcp_project }}"
+    --config-from-file="/tmp/moonshot_dashboard.json"

@@ -1,0 +1,84 @@
+---
+- name: Fail if required variables are not set or are placeholders
+  fail:
+    msg: >
+      One or more required variables are missing or contain invalid values:
+      - APP_SERVICE_IP: {{ app_ip }}
+      - APP_SERVICE_PORT: {{ app_port }}
+  when: run_tests and app_ip == "<APP_SERVICE_IP>" or app_port == "<APP_SERVICE_PORT>"
+
+- name: Manage Deployment for JMeter
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'jmeter-deployment.yml')  | from_yaml }}"
+    wait: true
+    wait_timeout: 180
+
+- name: Manage Service for JMeter
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'jmeter-service.yml') | from_yaml }}"
+    wait: true
+
+- name: Wait for JMeter pod readiness
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "{{ jmeter_app_label }}"
+  register: jmeter_pod_info
+  retries: "{{ pod_wait_retries }}"
+  delay: "{{ pod_wait_delay }}"
+  until: jmeter_pod_info.resources | length > 0
+
+- name: JMeter Pod Name
+  debug:
+    msg: "JMeter Pod name: {{ jmeter_pod_info.resources[0].metadata.name }}"
+  when: run_tests
+
+- name: Render the JMeter test plan
+  template:
+    src: "templates/test_plan.jmx"
+    dest: "/tmp/test_plan.jmx"
+  when: run_tests
+
+- name: Delete existing results file in JMeter pod if it exists
+  shell: "kubectl exec -n {{ namespace }} {{ jmeter_pod_info.resources[0].metadata.name }} -- rm -f /opt/jmeter/results/results.jtl"
+  ignore_errors: true
+  when: run_tests
+
+- name: Upload rendered test plan to JMeter pod
+  shell: "kubectl cp /tmp/test_plan.jmx {{ namespace }}/{{ jmeter_pod_info.resources[0].metadata.name }}:/opt/jmeter/test_plan.jmx"
+  when: run_tests
+
+- name: Verify test plan uploaded to JMeter pod
+  shell: "kubectl exec -n {{ namespace }} {{ jmeter_pod_info.resources[0].metadata.name }} -- test -f /opt/jmeter/test_plan.jmx"
+  register: test_plan_check
+  ignore_errors: true
+  when: run_tests
+
+- name: Fail if test plan is missing
+  fail:
+    msg: "Test plan file is missing in the expected path: /opt/jmeter/test_plan.jmx. Ensure the file was correctly uploaded."
+  when: run_tests and test_plan_check.rc != 0
+
+- name: Execute JMeter tests with retry
+  shell: "kubectl exec -n {{ namespace }} {{ jmeter_pod_info.resources[0].metadata.name }} -- /opt/jmeter/apache-jmeter-5.6.3/bin/jmeter -n -t /opt/jmeter/test_plan.jmx -l /opt/jmeter/results/results.jtl"
+  register: jmeter_execution
+  retries: "{{ probe_wait_retries }}"
+  delay: "{{ probe_wait_delay }}"
+  until: jmeter_execution.rc == 0
+  when: run_tests
+
+- name: Set the result file path dynamically
+  set_fact:
+    dynamic_result_file: "{{ result_folder }}{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}_{{ ansible_date_time.minute }}_{{ gcp_machine_type }}_{{ number_threads }}_{{ ramp_up_period }}_{{ loop_count }}{{ result_extension }}"
+
+- name: Copy test results to local machine
+  shell: "kubectl cp {{ namespace }}/{{ jmeter_pod_info.resources[0].metadata.name }}:/opt/jmeter/results/results.jtl {{ dynamic_result_file }}"
+  when: run_tests
+
+- name: Notify success
+  debug:
+    msg: "Results successfully copied to {{ dynamic_result_file }}"
+  when: run_tests

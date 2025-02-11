@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ deployment_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: jmeter
+    app.kubernetes.io/instance: {{ deployment_name }}
+    app.kubernetes.io/component: application
+    app.kubernetes.io/managed-by: ansible

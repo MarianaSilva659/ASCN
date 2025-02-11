@@ -1,0 +1,20 @@
+---
+- name: Remove Deployment for Moonshot
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'moonshot-deployment.yml') | from_yaml }}"
+
+- name: Remove Service for Moonshot
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'moonshot-service.yml') | from_yaml }}"
+
+- name: Remove Horizontal Pod Autoscaler for Moonshot
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'moonshot-hpa.yml') | from_yaml }}"
+
+- name: Remove ConfigMap for Moonshot
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'moonshot-config.yml') | from_yaml }}"

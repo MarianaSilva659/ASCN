@@ -1,0 +1,27 @@
+---
+- name: Remove Deployment for PostgreSQL
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'postgres-deployment.yml') | from_yaml }}"
+
+- name: Remove Service for PostgreSQL
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'postgres-service.yml') | from_yaml }}"
+
+- name: Remove PersistentVolumeClaim for PostgreSQL
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'postgres-pvc.yml') | from_yaml }}"
+  when: delete_data | default("false") == "true"
+
+- name: Remove PersistentVolume for PostgreSQL (only if delete_data is true)
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'postgres-pv.yml') | from_yaml }}"
+  when: delete_data | default("false") == "true"
+
+- name: Remove ConfigMap for PostgreSQL
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'postgres-config.yml') | from_yaml }}"

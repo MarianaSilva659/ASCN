@@ -1,0 +1,60 @@
+---
+- name: Manage ConfigMap for PostgreSQL
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'postgres-config.yml') | from_yaml }}"
+
+- name: Manage PersistentVolume for PostgreSQL
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'postgres-pv.yml') | from_yaml }}"
+
+- name: Manage PersistentVolumeClaim for PostgreSQL
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'postgres-pvc.yml') | from_yaml }}"
+    wait: true
+
+- name: Wait until PVC is bound
+  kubernetes.core.k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: "{{ namespace }}"
+    name: "{{ db_pvc_name }}"
+  register: pvc_status
+  retries: "{{ pvc_bind_retries }}"
+  delay: "{{ pvc_bind_delay }}"
+  until: pvc_status.resources | length > 0 and pvc_status.resources[0].status.phase == 'Bound'
+
+- name: Manage Deployment for PostgreSQL
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'postgres-deployment.yml') | from_yaml }}"
+    wait: true
+    wait_sleep: "{{ deployment_wait_sleep }}"
+    wait_timeout: "{{ deployment_wait_timeout }}"
+
+- name: Manage Service for PostgreSQL
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'postgres-service.yml') | from_yaml }}"
+    wait: true
+
+- name: Wait until PostgreSQL pod is created
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ namespace }}"
+    label_selectors:
+      - "{{ db_app_label }}"
+  delay: "{{ pod_wait_delay }}"
+  retries: "{{ pod_wait_retries }}"
+  register: postgres_pod_info
+
+- name: Update database host in configuration file
+  replace:
+    path: "{{ config_file_path }}"
+    regexp: "{{ db_host_regex }}"
+    replace: "db_host: {{ db_service_name }}"
+
+- name: Pause after updating configuration
+  pause:
+    seconds: "{{ pause_duration }}"

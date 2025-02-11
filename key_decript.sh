@@ -1,0 +1,1 @@
+ansible-vault decrypt --output gcp-key.json secrets.vault

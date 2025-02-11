@@ -1,0 +1,9 @@
+---
+# Namespace in Kubernetes where the deployment will be applied
+namespace: default
+
+# Name of the deployment
+deployment_name: jmeter-deployment
+
+# Name of the service
+service_name: jmeter-service

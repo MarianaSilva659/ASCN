@@ -1,0 +1,10 @@
+---
+- name: Remove JMeter deployment
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'jmeter-deployment.yml') | from_yaml }}"
+
+- name: Remove JMeter service
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'jmeter-service.yml') | from_yaml }}"

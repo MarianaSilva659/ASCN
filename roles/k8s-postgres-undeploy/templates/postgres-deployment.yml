@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ db_deployment_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: {{ db_deployment_name }}
+    app.kubernetes.io/version: "13.0"
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: postgres-system
+    app.kubernetes.io/managed-by: ansible

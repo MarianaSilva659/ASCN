@@ -1,0 +1,62 @@
+---
+- name: Manage ConfigMap for Moonshot
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'moonshot-config.yml') | from_yaml }}"
+
+- name: Manage Deployment for Moonshot
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'moonshot-deployment.yml') | from_yaml }}"
+    wait: true
+    wait_timeout: 180
+
+- name: Manage Service for Moonshot
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'moonshot-service.yml') | from_yaml }}"
+    wait: true
+    wait_timeout: 180
+
+- name: Manage Horizontal Pod Autoscaler for Moonshot
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'moonshot-hpa.yml') | from_yaml }}"
+    wait: true
+    wait_timeout: 180
+  when: enable_hpa | default(false) | bool
+
+- name: Wait for Moonshot Service external IP
+  shell: kubectl get service {{ moonshot_service_name }} -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
+  register: wait_for_ext_ip
+  until: wait_for_ext_ip.stdout != ""
+  retries: 30
+  delay: 5
+
+- name: Get Moonshot Service IP
+  shell: kubectl get service {{ moonshot_service_name }} -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
+  register: moonshot_service_ip
+
+- name: Update Moonshot service IP in inventory file
+  replace:
+    path: "{{ moonshot_inventory_file }}"
+    regexp: 'app_ip:.*$'
+    replace: 'app_ip: "{{ moonshot_service_ip.stdout }}"'
+
+- name: Set Moonshot Service IP as a fact
+  set_fact:
+    app_ip: "{{ moonshot_service_ip.stdout }}"
+
+- name: Get Moonshot Service Port
+  shell: kubectl get service {{ moonshot_service_name }} -o jsonpath="{.spec.ports[0].port}"
+  register: moonshot_service_port
+
+- name: Update Moonshot service port in inventory file
+  replace:
+    path: "{{ moonshot_inventory_file }}"
+    regexp: 'app_port:.*$'
+    replace: 'app_port: "{{ moonshot_service_port.stdout }}"'
+
+- name: Set Moonshot Service Port as a fact
+  set_fact:
+    app_port: "{{ moonshot_service_port.stdout }}"

@@ -1,0 +1,8 @@
+# Kubernetes Namespace
+namespace: default  # Namespace where PostgreSQL resources are deployed
+
+# Resource Names
+db_pv_name: postgres-pv  # PersistentVolume name
+db_pvc_name: postgres-pvc  # PersistentVolumeClaim name
+db_deployment_name: postgres-deployment  # Deployment name
+db_service_name: postgres-service  # Service name

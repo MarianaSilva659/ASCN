@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ db_pvc_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: {{ db_pvc_name }}
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/managed-by: ansible
+spec:
+  accessModes:
+    - {{ pv_access_mode }}
+  resources:
+    requests:
+      storage: {{ pv_storage_size }}
+  storageClassName: standard

@@ -1,0 +1,39 @@
+---
+# Java JDK image
+java_image: openjdk:11
+
+# Flag that when set as 'true' instructs ansible to run tests on the application
+run_tests: false
+
+# Namespace in Kubernetes where the deployment will be applied
+namespace: default
+
+# Name of the deployment
+deployment_name: jmeter-deployment
+
+# Name of the service
+service_name: jmeter-service
+
+# JMeter App Label
+jmeter_app_label: app.kubernetes.io/name=jmeter
+
+# Path to the local file where JMeter results will be saved
+result_folder: results/
+result_extension: .jtl
+
+# Path to the JMeter test plan file to upload to the pods
+jmx_file: ./test_plan.jmx
+
+# Number of replicas to create in the deployment
+deployment_replicas: 1
+
+# Timeouts and Retries
+pod_wait_delay: 5       # Delay (in seconds) between Pod readiness checks
+pod_wait_retries: 30    # Retries between Pod readiness checks
+probe_wait_delay: 360   # Delay (in seconds) between probe readiness checks
+probe_wait_retries: 2   # Retries between probe readiness checks
+
+# Test Variables
+number_threads: 1          # Number of threads (users) to simulate in the load test
+ramp_up_period: 1          # Ramp-up period in seconds to spread out thread startup
+loop_count: 1              # Number of iterations each thread will perform

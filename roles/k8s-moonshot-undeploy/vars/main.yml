@@ -1,0 +1,6 @@
+# Kubernetes Namespace
+namespace: default
+
+# Moonshot Resource Names
+moonshot_service_name: moonshot-service
+moonshot_deployment_name: moonshot-deployment

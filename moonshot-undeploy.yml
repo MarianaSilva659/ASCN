@@ -1,0 +1,9 @@
+---
+- name: "Undeploy PostgreSQL and Moonshot"
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: k8s-moonshot-undeploy
+      tags: ["k8s-moonshot-undeploy"]
+    - role: k8s-postgres-undeploy
+      tags: ["k8s-postgres-undeploy"]

@@ -1,0 +1,7 @@
+---
+- name: "Deploy Apache JMeter to GKE"
+  hosts: localhost
+  gather_facts: true
+  roles:
+    - role: gcp-jmeter-deploy
+      tags: ["gcp-jmeter-deploy"]

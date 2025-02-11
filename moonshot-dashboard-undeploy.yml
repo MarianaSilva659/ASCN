@@ -1,0 +1,7 @@
+---
+- name: "Undeploy Moonshot Dashboard"
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: gcp-dashboard-undeploy
+      tags: ["gcp-dashboard-undeploy"]

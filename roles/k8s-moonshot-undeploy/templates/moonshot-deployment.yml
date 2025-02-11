@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ moonshot_deployment_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: moonshot
+    app.kubernetes.io/instance: {{ moonshot_deployment_name }}
+    app.kubernetes.io/component: application
+    app.kubernetes.io/managed-by: ansible

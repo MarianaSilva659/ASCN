@@ -1,0 +1,7 @@
+---
+- name: "Undeploy Apache JMeter from GKE"
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: gcp-jmeter-undeploy
+      tags: ["gcp-jmeter-undeploy"]

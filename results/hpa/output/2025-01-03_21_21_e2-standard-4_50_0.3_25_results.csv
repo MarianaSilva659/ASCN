@@ -1,0 +1,10 @@
+Metric,Value,Unit
+Throughput,92.10203581064508,Requests/Second
+Average Response Time,146.91371504660452,ms
+Error Rate,0.0,%
+Average Latency,146.86018641810918,ms
+Total Data Received,1608234.0,Bytes
+Total Data Sent,1817284.0,Bytes
+Response Code 200,1254.0,Count
+Response Code 302,1251.0,Count
+Response Code 201,1250.0,Count

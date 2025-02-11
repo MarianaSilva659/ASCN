@@ -1,0 +1,36 @@
+# Kubernetes Namespace
+namespace: default  # The namespace where resources are deployed
+
+# Resource Names
+db_pv_name: postgres-pv  # Name of the PersistentVolume
+db_pvc_name: postgres-pvc  # Name of the PersistentVolumeClaim
+db_deployment_name: postgres-deployment  # Name of the Deployment
+db_service_name: postgres-service  # Name of the Service
+db_app_label: app.kubernetes.io/name=postgres  # Label used for selecting resources
+
+# Image Information
+db_image: postgres:13  # PostgreSQL Docker image
+
+# Configuration File
+config_file_path: group_vars/all.yml  # Path to the configuration file to update
+db_host_regex: "db_host:.+"  # Regex pattern to find the DB host in the config file
+
+# Persistent Volume Configuration
+pv_storage_size: 20Gi  # Size of the PersistentVolume (storage capacity)
+pv_access_mode: ReadWriteOnce  # Access mode for thePV (typically RWO for single-node)
+
+# Pause Duration (in seconds)
+pause_duration: 5  # Time to pause after specific tasks
+
+# Timeouts and Retries
+pvc_bind_retries: 6  # Number of retries for PVC binding
+pvc_bind_delay: 10  # Delay (in seconds) between PVC binding retries
+service_ip_retries: 60  # Number of retries for waiting on Service IP
+service_ip_delay: 5  # Delay (in seconds) between Service IP retries
+deployment_wait_timeout: 180  # Timeout for waiting on Deployment readiness
+deployment_wait_sleep: 5 # Sleepin seconds between retries on Deployment readiness
+pod_wait_delay: 5  # Delay (in seconds) between Pod readiness checks
+pod_wait_retries: 30  # Retries between Pod readiness checks
+
+# PostgreSQL default port
+db_port: 5432

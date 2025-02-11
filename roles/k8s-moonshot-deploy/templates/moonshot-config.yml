@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moonshot-config
+  namespace: {{ namespace }}
+data:
+  DB_HOST: "{{ db_host }}"
+  DB_NAME: "{{ db_name }}"
+  DB_USER: "{{ db_username }}"
+  DB_PASSWORD: "{{ db_password }}"
+  DB_PORT: "{{ db_port }}"
+  SEED_DB: "{{ seed_database | default('false') }}"
+  MIGRATE_DB: "{{ migrate_db | default('false') }}"

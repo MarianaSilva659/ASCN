@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: {{ namespace }}
+data:
+  PGDATA: /var/lib/postgresql/data/pgdata
+  POSTGRES_ALLOW_EMPTY_PASSWORD: "true"
+  POSTGRES_DB: "{{ db_name }}"
+  POSTGRES_USER: "{{ db_username }}"
+  POSTGRES_PASSWORD: "{{ db_password }}"

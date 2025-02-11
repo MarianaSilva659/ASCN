@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ deployment_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: jmeter
+    app.kubernetes.io/instance: {{ deployment_name }}
+    app.kubernetes.io/component: application
+    app.kubernetes.io/managed-by: ansible
+spec:
+  replicas: {{ deployment_replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jmeter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: jmeter
+        app.kubernetes.io/instance: {{ deployment_name }}
+    spec:
+      containers:
+      - name: jmeter
+        image: {{ java_image }}
+        command:
+        - sh
+        - -c
+        - |
+          apt-get update && \
+          apt-get install -y openjdk-11-jre wget tar && \
+          wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz && \
+          tar -xzf apache-jmeter-5.6.3.tgz -C /opt/ && \
+          mv /opt/apache-jmeter-5.6.3 /opt/jmeter && \
+          mkdir -p /opt/jmeter/results && \
+          tail -f /dev/null
+        volumeMounts:
+        - name: test-results
+          mountPath: /opt/jmeter/results
+        ports:
+        - name: comm-port
+          containerPort: 50000
+      volumes:
+      - name: test-results
+        emptyDir: {}

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ db_service_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: {{ db_service_name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/managed-by: ansible
+spec:
+  selector:
+    app.kubernetes.io/name: postgres
+  ports:
+    - protocol: TCP
+      port: {{ db_port }}
+      targetPort: {{ db_port }}
+      nodePort: {{ db_node_port | default(32000) }}
+  type: NodePort

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ moonshot_service_name }}
+  namespace: {{ namespace }}
+  labels:
+    app.kubernetes.io/name: moonshot
+    app.kubernetes.io/instance: {{ moonshot_service_name }}
+    app.kubernetes.io/component: service
+    app.kubernetes.io/managed-by: ansible
